@@ -93,6 +93,11 @@ class XiaoQuBaseSpider(BaseSpider):
                 # 作为对象保存
                 xiaoqu = XiaoQu(chinese_district, chinese_area, name, price, on_sale)
                 xiaoqu_list.append(xiaoqu)
+                pattern = re.compile("resblockPosition:'" + '(.*?)' + "',", re.S)
+                pos = pattern.findall(soup)[0]
+                lon=pos.split(',')[0]
+                lat=pos.split(',')[1]
+                print(f"xiaoqu infos ({lon},{lat})")
         return xiaoqu_list
 
     def start(self):

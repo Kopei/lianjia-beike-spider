@@ -39,7 +39,7 @@ if __name__ == '__main__':
     # database = "mongodb"
     # database = "excel"
     # database = "json"
-    database = "csv"
+    database = "mysql"
     ##################################
     db = None
     collection = None
@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     if database == "mysql":
         import records
-        db = records.Database('mysql://root:123456@localhost/lianjia?charset=utf8', encoding='utf-8')
+        db = records.Database('mysql://root:prisma@localhost:9336/lianjia?charset=utf8', encoding='utf-8')
     elif database == "mongodb":
         from pymongo import MongoClient
         conn = MongoClient('localhost', 27017)
