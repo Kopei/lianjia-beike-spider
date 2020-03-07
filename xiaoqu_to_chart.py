@@ -7,7 +7,7 @@
 # 3. 用浏览器打开生成的数据html文件
 
 import pandas as pd
-from pyecharts import Bar
+from pyecharts.charts.basic_charts.bar import Bar
 
 import os
 import time
@@ -32,16 +32,17 @@ if __name__ == '__main__':
             print(e)
 
     # 注意，已经将分割符号转换成分号，因为有的小区名中有逗号
-    df = pd.read_csv("xiaoqu.csv", encoding="utf-8", sep=";")
-
+    df = pd.read_csv("data/ke/xiaoqu/sh/20191029/baoshan_dachangzhen.csv", encoding="utf-8", names=['date','district','area','xiaoqu','price','sale'])
+    print(df)
+    # df['price'] = df['price'].as_type('float')
     # 打印总行数
-    print("row number is {0}".format(len(df.index)))
+    print("all row number is {0}".format(len(df.index)))
 
     # 过滤房价为0的无效数据
-    df = df[df.price > 0]
+    df = df[df.price == '暂无']
     # # 去除重复行
     # df = df.drop_duplicates()
-    print("row number is {0}".format(len(df.index)))
+    print("have value row number is {0}".format(len(df.index)))
 
     ####################################################
     # 最贵的小区排名
@@ -49,7 +50,8 @@ if __name__ == '__main__':
     df.sort_values("price", ascending=False, inplace=True)
     num = 5
     print(df.head(num))
-    city = df["city_ch"][0]
+    # city = df["city_ch"][0]
+    city = 'Shanghai'
     xqs = df["xiaoqu"][0:num]
     prices = df["price"][0:num]
     bar = Bar("{0}小区均价".format(city))

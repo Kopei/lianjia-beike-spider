@@ -99,57 +99,39 @@ if __name__ == '__main__':
                 text = line.strip()
                 try:
                     # 如果小区名里面没有逗号，那么总共是6项
-                    if text.count(',') == 5:
-                        date, district, area, xiaoqu, price, sale = text.split(',')
-                    elif text.count(',') < 5:
-                        continue
-                    else:
-                        fields = text.split(',')
-                        date = fields[0]
-                        district = fields[1]
-                        area = fields[2]
-                        xiaoqu = ','.join(fields[3:-2])
-                        price = fields[-2]
-                        sale = fields[-1]
+                    fields = text.split(',')
+                    date = fields[0]
+                    district = fields[1]
+                    area = fields[2]
+                    xiaoqu = fields[3]
+                    price = fields[4]
+                    sale = fields[5]
+                    ninetydaysales = fields[6]
+                    buildyear = fields[7]
+                    currentonrent = fields[8]
+                    sale = sale.replace(r'套在售二手房', '')
+                    price = price.replace(r'暂无', '0')
+                    price = price.replace(r'元/m2', '')
+                    ninetydaysales = ninetydaysales.replace(r'暂无', '0')
+                    price = int(price)
+                    sale = int(sale)
                 except Exception as e:
-                    print(text)
-                    print(e)
-                    continue
-                sale = sale.replace(r'套在售二手房', '')
-                price = price.replace(r'暂无', '0')
-                price = price.replace(r'元/m2', '')
-                price = int(price)
-                sale = int(sale)
-                print("{0} {1} {2} {3} {4} {5}".format(date, district, area, xiaoqu, price, sale))
+                    print(line)
+                    raise e
+
+                # print("{0} {1} {2} {3} {4} {5}".format(date, district, area, xiaoqu, price, sale))
                 # 写入mysql数据库
                 if database == "mysql":
-                    db.query('INSERT INTO xiaoqu (city, date, district, area, xiaoqu, price, sale) '
-                             'VALUES(:city, :date, :district, :area, :xiaoqu, :price, :sale)',
+                    db.query('INSERT INTO xiaoqu (city, date, district, area, xiaoqu, price, sale, ninetydaysales, buildyear, currentonrent) '
+                             'VALUES(:city, :date, :district, :area, :xiaoqu, :price, :sale, :ninetydaysales, :buildyear, :currentonrent)',
                              city=city_ch, date=date, district=district, area=area, xiaoqu=xiaoqu, price=price,
-                             sale=sale)
+                             sale=sale, ninetydaysales=ninetydaysales, buildyear=buildyear, currentonrent=currentonrent)
                 # 写入mongodb数据库
                 elif database == "mongodb":
                     data = dict(city=city_ch, date=date, district=district, area=area, xiaoqu=xiaoqu, price=price,
                                 sale=sale)
                     collection.insert(data)
-                elif database == "excel":
-                    if not PYTHON_3:
-                        worksheet.write_string(row, col, unicode(city_ch, 'utf-8'))
-                        worksheet.write_string(row, col + 1, date)
-                        worksheet.write_string(row, col + 2, unicode(district, 'utf-8'))
-                        worksheet.write_string(row, col + 3, unicode(area, 'utf-8'))
-                        worksheet.write_string(row, col + 4, unicode(xiaoqu, 'utf-8'))
-                        worksheet.write_number(row, col + 5, price)
-                        worksheet.write_number(row, col + 6, sale)
-                    else:
-                        worksheet.write_string(row, col, city_ch)
-                        worksheet.write_string(row, col + 1, date)
-                        worksheet.write_string(row, col + 2, district)
-                        worksheet.write_string(row, col + 3, area)
-                        worksheet.write_string(row, col + 4, xiaoqu)
-                        worksheet.write_number(row, col + 5, price)
-                        worksheet.write_number(row, col + 6, sale)
-                    row += 1
+
                 elif database == "json":
                     data = dict(city=city_ch, date=date, district=district, area=area, xiaoqu=xiaoqu, price=price,
                                 sale=sale)

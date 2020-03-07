@@ -80,24 +80,38 @@ class XiaoQuBaseSpider(BaseSpider):
 
             # 获得有小区信息的panel
             house_elems = soup.find_all('li', class_="xiaoquListItem")
-            for house_elem in house_elems:
-                price = house_elem.find('div', class_="totalPrice")
-                name = house_elem.find('div', class_='title')
-                on_sale = house_elem.find('div', class_="xiaoquListItemSellCount")
+            try:
+                for house_elem in house_elems:
+                    price = house_elem.find('div', class_="totalPrice").find('span')
+                    name = house_elem.find('div', class_='title')
+                    on_sale = house_elem.find('div', class_="xiaoquListItemSellCount")
+                    ninety_days_sales = house_elem.find('div', class_='houseInfo').find('a')
+                    current_on_rent = house_elem.find('div', class_='houseInfo').find_all('a')
+                    build_year = house_elem.find('div', class_='positionInfo')
+                    # 继续清理数据
+                    pattern = re.compile('\d+')
+                    price = price.text.strip()
+                    name = name.text.replace("\n", "").replace(',', '-')
+                    on_sale = pattern.findall(on_sale.text.replace("\n", "").strip())[0]
+                    ninety_days_sales = pattern.findall(ninety_days_sales.text.strip())[1]
+                    if len(current_on_rent) > 1:
+                        current_on_rent = pattern.findall(current_on_rent[-1].text.strip())[0]
+                    else:
+                        current_on_rent = 0
+                    build_year = pattern.findall(build_year.text.replace('\n', '').strip())
+                    build_year = build_year[0] if build_year else 0
+                    # 作为对象保存
+                    pre_list = [chinese_district, chinese_area, name, price, on_sale, ninety_days_sales, build_year, current_on_rent]
+                    arg_list = []
+                    for index, j in enumerate(pre_list):
+                        if not j:
+                            j = 0
+                        arg_list.append(j)
 
-                # 继续清理数据
-                price = price.text.strip()
-                name = name.text.replace("\n", "")
-                on_sale = on_sale.text.replace("\n", "").strip()
-
-                # 作为对象保存
-                xiaoqu = XiaoQu(chinese_district, chinese_area, name, price, on_sale)
-                xiaoqu_list.append(xiaoqu)
-                pattern = re.compile("resblockPosition:'" + '(.*?)' + "',", re.S)
-                pos = pattern.findall(soup)[0]
-                lon=pos.split(',')[0]
-                lat=pos.split(',')[1]
-                print(f"xiaoqu infos ({lon},{lat})")
+                    xiaoqu = XiaoQu(*arg_list)
+                    xiaoqu_list.append(xiaoqu)
+            except Exception as e:
+                print(e)
         return xiaoqu_list
 
     def start(self):
