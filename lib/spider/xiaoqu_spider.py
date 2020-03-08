@@ -8,6 +8,7 @@ import re
 import threadpool
 from bs4 import BeautifulSoup
 from lib.item.xiaoqu import *
+from lib.utility.location import getjwd_bd
 from lib.zone.city import get_city
 from lib.spider.base_spider import *
 from lib.utility.date import *
@@ -100,8 +101,12 @@ class XiaoQuBaseSpider(BaseSpider):
                         current_on_rent = 0
                     build_year = pattern.findall(build_year.text.replace('\n', '').strip())
                     build_year = build_year[0] if build_year else 0
+
+                    # query lng, lat
+                    lng, lat = getjwd_bd(name)
                     # 作为对象保存
-                    pre_list = [chinese_district, chinese_area, name, price, on_sale, ninety_days_sales, build_year, current_on_rent]
+                    pre_list = [chinese_district, chinese_area, name, price, on_sale, ninety_days_sales, build_year,
+                                current_on_rent, lng, lat]
                     arg_list = []
                     for index, j in enumerate(pre_list):
                         if not j:

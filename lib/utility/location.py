@@ -8,10 +8,6 @@ import json
 import threadpool
 import pandas as pd
 
-# from lib.spider.base_spider import SPIDER_NAME
-# from lib.utility.date import get_date_string
-# from lib.utility.path import DATA_PATH
-# from lib.zone.city import get_city, get_chinese_city
 
 POOL_SIZE = 512
 

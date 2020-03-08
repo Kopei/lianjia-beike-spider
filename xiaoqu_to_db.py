@@ -93,6 +93,7 @@ if __name__ == '__main__':
     row = 0
     col = 0
     for csv in files:
+        print('process...', csv)
         with open(csv, 'r') as f:
             for line in f:
                 count += 1
@@ -109,6 +110,8 @@ if __name__ == '__main__':
                     ninetydaysales = fields[6]
                     buildyear = fields[7]
                     currentonrent = fields[8]
+                    lng = fields[9]
+                    lat = fields[10]
                     sale = sale.replace(r'套在售二手房', '')
                     price = price.replace(r'暂无', '0')
                     price = price.replace(r'元/m2', '')
@@ -122,10 +125,11 @@ if __name__ == '__main__':
                 # print("{0} {1} {2} {3} {4} {5}".format(date, district, area, xiaoqu, price, sale))
                 # 写入mysql数据库
                 if database == "mysql":
-                    db.query('INSERT INTO xiaoqu (city, date, district, area, xiaoqu, price, sale, ninetydaysales, buildyear, currentonrent) '
-                             'VALUES(:city, :date, :district, :area, :xiaoqu, :price, :sale, :ninetydaysales, :buildyear, :currentonrent)',
+                    db.query('INSERT INTO xiaoqu (city, date, district, area, xiaoqu, price, sale, ninetydaysales, buildyear, currentonrent, lng, lat) '
+                             'VALUES(:city, :date, :district, :area, :xiaoqu, :price, :sale, :ninetydaysales, :buildyear, :currentonrent, :lng, :lat)',
                              city=city_ch, date=date, district=district, area=area, xiaoqu=xiaoqu, price=price,
-                             sale=sale, ninetydaysales=ninetydaysales, buildyear=buildyear, currentonrent=currentonrent)
+                             sale=sale, ninetydaysales=ninetydaysales, buildyear=buildyear, currentonrent=currentonrent,
+                             lng=lng, lat=lat)
                 # 写入mongodb数据库
                 elif database == "mongodb":
                     data = dict(city=city_ch, date=date, district=district, area=area, xiaoqu=xiaoqu, price=price,
